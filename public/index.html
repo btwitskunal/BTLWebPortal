@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload Excel</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2>Upload Excel File</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <div class="message-box hidden" id="messageBox"></div>
+
+      <div class="upload-box" id="drop-area">
+        <div class="icon">📤</div>
+        <p>Upload your file here</p>
+        <small>Files supported: XLSX, XLS</small>
+        <p>OR</p>
+        <label class="browse-btn">
+          BROWSE
+          <input type="file" name="excelFile" id="fileElem" accept=".xlsx,.xls" hidden />
+        </label>
+        <small>Maximum size: 2MB</small>
+      </div>
+
+      <div id="file-info" class="file-info hidden">
+        <span id="file-name"></span>
+        <span class="delete-btn" id="delete-btn">🗑️</span>
+      </div>
+
+      <button type="submit" class="submit-btn">Upload</button>
+      <div id="spinner" class="hidden">⏳ Uploading, please wait...</div>
+    </form>
+
+    <div id="preview" class="preview hidden">
+      <h4>Excel Preview:</h4>
+      <table id="previewTable"></table>
+    </div>
+  </div>
+</body>
+</html>
