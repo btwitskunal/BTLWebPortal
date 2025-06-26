@@ -3,42 +3,56 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Upload Excel</title>
-  <link rel="stylesheet" href="styles.css"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <title>BTL Portal - Upload Excel</title>
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Load SheetJS for reading Excel files -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script defer src="script.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h2>Upload Excel File</h2>
-    <form id="uploadForm" enctype="multipart/form-data">
+  <header class="header">
+    <img src="images/scl_logo.png" alt="Company Logo" class="logo" />
+    <h1 class="portal-title">BTL Marketing Execution Portal</h1>
+  </header>
+
+  <main class="main-content">
+    <div class="card">
+      <h2>Upload Excel File</h2>
+
+      <a href="/download-template" class="template-btn" download>📄 Download Sample Template</a>
+
       <div class="message-box hidden" id="messageBox"></div>
 
-      <div class="upload-box" id="drop-area">
-        <div class="icon">📤</div>
-        <p>Upload your file here</p>
-        <small>Files supported: XLSX, XLS</small>
-        <p>OR</p>
-        <label class="browse-btn">
-          BROWSE
-          <input type="file" name="excelFile" id="fileElem" accept=".xlsx,.xls" hidden />
-        </label>
-        <small>Maximum size: 2MB</small>
+      <!-- Form starts -->
+      <form id="uploadForm" enctype="multipart/form-data">
+        <div class="upload-box" id="drop-area">
+          <div class="icon">📤</div>
+          <p>Drag & Drop your file here</p>
+          <small>Supported: XLSX, XLS | Max size: 2MB</small>
+          <p>OR</p>
+          <label class="browse-btn">
+            BROWSE
+            <input type="file" name="excelFile" id="fileElem" accept=".xlsx,.xls" hidden />
+          </label>
+        </div>
+
+        <div id="file-info" class="file-info hidden">
+          <span id="file-name"></span>
+          <span class="delete-btn" id="delete-btn">🗑️</span>
+        </div>
+
+        <button type="submit" class="submit-btn">Upload</button>
+        <div id="spinner" class="hidden">⏳ Uploading, please wait...</div>
+      </form>
+
+      <div id="preview" class="preview hidden">
+        <h4>Excel Preview:</h4>
+        <div class="table-container">
+          <table id="previewTable"></table>
+        </div>
       </div>
-
-      <div id="file-info" class="file-info hidden">
-        <span id="file-name"></span>
-        <span class="delete-btn" id="delete-btn">🗑️</span>
-      </div>
-
-      <button type="submit" class="submit-btn">Upload</button>
-      <div id="spinner" class="hidden">⏳ Uploading, please wait...</div>
-    </form>
-
-    <div id="preview" class="preview hidden">
-      <h4>Excel Preview:</h4>
-      <table id="previewTable"></table>
     </div>
-  </div>
+  </main>
 </body>
 </html>

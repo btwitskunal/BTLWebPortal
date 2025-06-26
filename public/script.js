@@ -5,6 +5,9 @@ const deleteBtn = document.getElementById('delete-btn');
 const messageBox = document.getElementById('messageBox');
 const dropArea = document.getElementById('drop-area');
 const spinner = document.getElementById('spinner');
+const previewSection = document.getElementById('preview');
+const previewTable = document.getElementById('previewTable');
+const uploadForm = document.getElementById('uploadForm');
 
 fileElem.addEventListener('change', () => {
   if (fileElem.files.length > 0) {
@@ -20,10 +23,11 @@ deleteBtn.addEventListener('click', () => {
   fileElem.value = '';
   fileInfo.classList.add('hidden');
   fileName.textContent = '';
-  document.getElementById('preview').classList.add('hidden');
+  previewSection.classList.add('hidden');
+  clearMessages();
 });
 
-document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+uploadForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   clearMessages();
   spinner.classList.remove('hidden');
@@ -48,25 +52,32 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
 
     if (!response.ok) {
       showMessage(result.message || 'Upload failed.', 'error');
-      if (Array.isArray(result.errors)) {
-        result.errors.forEach(err => showMessage(err, 'error'));
-        const csv = generateCSV(result.errors);
-        createDownloadLink(csv, 'error_report.csv');
-      }
     } else {
       showMessage(result.message, 'success');
-      fileElem.value = '';
-      fileInfo.classList.add('hidden');
-      fileName.textContent = '';
-      document.getElementById('preview').classList.add('hidden');
     }
+
+    if (result.downloadUrl) {
+      const link = document.createElement('a');
+      link.href = result.downloadUrl;
+      link.textContent = '📥 Download Annotated Excel File';
+      link.download = '';
+      link.style.display = 'block';
+      link.style.marginTop = '10px';
+      messageBox.classList.remove('hidden');
+      messageBox.appendChild(link);
+    }
+
+    fileElem.value = '';
+    fileInfo.classList.add('hidden');
+    fileName.textContent = '';
+    previewSection.classList.add('hidden');
+
   } catch (err) {
     spinner.classList.add('hidden');
-    showMessage('❌ Unexpected error while uploading.', 'error');
+    showMessage('❌ Unexpected error during upload.', 'error');
   }
 });
 
-// Drag & Drop Events
 ['dragenter', 'dragover'].forEach(eventName => {
   dropArea.addEventListener(eventName, (e) => {
     e.preventDefault();
@@ -85,10 +96,7 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
 
 dropArea.addEventListener('drop', (e) => {
   const files = e.dataTransfer.files;
-  if (
-    files.length > 0 &&
-    (files[0].name.endsWith('.xlsx') || files[0].name.endsWith('.xls'))
-  ) {
+  if (files.length > 0 && /\.(xlsx|xls)$/i.test(files[0].name)) {
     fileElem.files = files;
     fileName.textContent = files[0].name;
     fileInfo.classList.remove('hidden');
@@ -108,8 +116,7 @@ function previewExcel(file) {
     const sheet = workbook.Sheets[sheetName];
     const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-    const table = document.getElementById('previewTable');
-    table.innerHTML = '';
+    previewTable.innerHTML = '';
 
     json.slice(0, 6).forEach((row) => {
       const tr = document.createElement('tr');
@@ -118,10 +125,10 @@ function previewExcel(file) {
         td.textContent = cell;
         tr.appendChild(td);
       });
-      table.appendChild(tr);
+      previewTable.appendChild(tr);
     });
 
-    document.getElementById('preview').classList.remove('hidden');
+    previewSection.classList.remove('hidden');
   };
   reader.readAsArrayBuffer(file);
 }
@@ -138,19 +145,4 @@ function clearMessages() {
   messageBox.classList.add('hidden');
   messageBox.classList.remove('error', 'success');
   messageBox.innerHTML = '';
-}
-
-function generateCSV(errors) {
-  return "Error Message\n" + errors.map(msg => `"${msg}"`).join("\n");
-}
-
-function createDownloadLink(csvData, filename) {
-  const blob = new Blob([csvData], { type: 'text/csv' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = filename;
-  link.textContent = '📥 Download Error Report';
-  link.style.display = 'block';
-  link.style.marginTop = '10px';
-  messageBox.appendChild(link);
 }
